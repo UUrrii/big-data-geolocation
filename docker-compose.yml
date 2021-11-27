@@ -1,0 +1,58 @@
+version: '3.0'
+services:
+        hadoop:
+                image: marcelmittelstaedt/spark_base:latest
+                restart: always
+                container_name: hadoop
+                ports:
+                        - 8088:8088
+                        - 9870:9870
+                        - 9864:9864
+                        - 10000:10000
+                        - 8032:8032
+                        - 8030:8030
+                        - 8031:8031
+                        - 9000:9000
+                        - 8888:8888
+                networks:
+                        - big-data-network
+        airflow:
+                image: marcelmittelstaedt/airflow:latest
+                restart: always
+                container_name: airflow
+                ports:
+                        - 8080:8080
+                volumes:
+                        - ./dags:/home/airflow/airflow/dags
+                        - ./scripts:/home/airflow/scripts
+                        - ./python:/home/airflow/airflow/python
+                networks:
+                        - big-data-network
+        db:
+                image: mysql
+                restart: always
+                environment:
+                        MYSQL_ROOT_PASSWORD: root
+                        MYSQL_DATABASE: geolocation
+                ports:
+                        - 3306:3306
+        adminer:
+                image: adminer
+                restart: always
+                ports:
+                        - 8081:8080
+        backend:
+                image: "node"
+                restart: unless-stopped
+                user: "root"
+                working_dir: /home/node/app
+                environment:
+                        - NODE_ENV=production
+                volumes:
+                        - ./app:/home/node/app
+                ports:
+                        - "3000:3000"
+                command: "npm start"
+networks:
+        big-data-network:
+                name: big-data-network
