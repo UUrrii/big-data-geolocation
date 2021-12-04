@@ -18,4 +18,4 @@ Big-Data Project
 - start-all.sh
 
 ## Frontend
-Das Frontend ist unter <IP-Adresse>:3000 erreichbar
+Das Frontend ist unter dem Port 3000 erreichbar
