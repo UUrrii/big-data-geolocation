@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple registration form</title>
+    <title>Geolocation</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
     <style>
@@ -16,7 +16,7 @@
       outline: none;
       font-family: Roboto, Arial, sans-serif;
       font-size: 16px;
-      color: #666;
+      color: black;
       }
       h1 {
       padding: 10px 0;
@@ -33,13 +33,13 @@
       opacity: 0.3;
       }
       .main-block {
-      max-width: 340px;
+      min-width: 700px;
       padding: 10px 0;
       margin: auto;
       border-radius: 5px; 
       border: solid 1px #ccc;
       box-shadow: 1px 2px 5px rgba(0,0,0,.31); 
-      background: #ebebeb; 
+      background: white; 
       }
       form {
       margin: 0 30px;
@@ -50,7 +50,7 @@
       margin: 10px auto;
       border-radius: 5px; 
       border: none;
-      background: #1c87c9; 
+      background: grey; 
       font-size: 14px;
       font-weight: 600;
       color: #fff;
@@ -72,18 +72,17 @@
           cursor: default;
       }
       .form-row {
-          margin: 15px;  
+          margin: 20px;  
           display: flex;
           flex-direction: row;
           justify-content: center;
           align-items: center;
       }
       input {
-          width: calc(100% - 100px);
-          height: 36 px;
+          width: calc(100% - 200px);
+          height: 50px;
           margin: 0px 0 0 -5px;
           padding-left: 10px;
-          border-radius: 5px;
           border: solid 1px #cbc9c9;
           box-shadow: 1px 2px 5px rgba(0, 0, 0, .09);
           background: #fff;
@@ -101,30 +100,59 @@
       <h1>172.175.84.456</h1>
       <hr>
       <div class="result">
+          <div class="result-row">
+              <label for="continent">Continent</label>
+              <input type="text" name="continent" id="continent" readonly/>
+          </div>
         <div class="result-row">
-            <label for="country">Staat</label>
+            <label for="country">Country</label>
             <input type="text" name="country" id="country" readonly/>
         </div>
         <div class="result-row">
-            <label for="subdivision">Bundesland</label>
+            <label for="subdivision">Subdivision</label>
             <input type="text" name="subdivision" id="subdivision" readonly/>
         </div>
         <div class="result-row">
-            <label for="city">Stadt</label>
-            <input type="password" name="city" id="city" readonly/>
+            <label for="city">City</label>
+            <input type="text" name="city" id="city" readonly/>
         </div>
       </div>
       <hr>
       <form action="/">
         <div class="form-row">
-            <label id="icon" for="ip-address">Check IP</label>
+            <label id="icon" for="ip-address">IP-Adress to check</label>
             <input type="text" name="ip-address" id="ip-address" placeholder="123.45..." required/>
         </div>
         <hr>
         <div class="btn-block">
-          <button type="submit" href="/">Submit</button>
+          <button type="button" id="submit-button" href="/">Check Location</button>
         </div>
       </form>
     </div>
   </body>
+  <script>
+      const button = document.getElementById("submit-button");
+      button.addEventListener('click', async () => {
+          const inputContinent = document.getElementById("continent");
+          const inputCountry = document.getElementById("country");
+          const inputSubdivison = document.getElementById("subdivision");
+          const inputCity = document.getElementById("city");
+          const input = document.getElementById("ip-address").value;
+          console.log(input);
+          if (input) {
+              fetch('http://localhost:3000/ip/' + input, {
+                  method: 'get'
+              }).then(data => data.json().then(res => {
+                  inputContinent.value = res.continent_name;
+                  inputCountry.value = res.country_name;
+                  inputSubdivison.value = res.subdivision_1_name;
+                  inputCity.value = res.city_name;
+                  console.log(res);
+              })).catch(err => console.log(`Error: ${err}`));
+          } else {
+              alert('Please input an ip-address');
+          }
+      });
+  </script>
 </html>
+

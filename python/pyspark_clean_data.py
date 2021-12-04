@@ -30,23 +30,20 @@ if __name__ == '__main__':
     sc = pyspark.SparkContext()
     spark = SparkSession(sc)
 
-    # Read ipv4 from HDFS
-    ipv4_dataframe = spark.read.format(args.hdfs_target_format)\
-        .options(header='true', delimiter=',', nullValue='null', inferschema='true')\
-        .load(f'{args.hdfs_source_dir}/ipv4/{args.year}/{args.month}/{args.day}/*.{args.hdfs_target_format}')
-
     # Read data from HDFS
     data_dataframe = spark.read.format(args.hdfs_target_format)\
         .options(header='true', delimiter=',', nullValue='null', inferschema='true')\
         .load(f'{args.hdfs_source_dir}/data/{args.year}/{args.month}/{args.day}/*.{args.hdfs_target_format}')
 
-    # Clean Dataframes
-    ipv4_dataframe = ipv4_dataframe.select('network', 'geoname_id', 'latitude', 'longitude')
-    ipv4_dataframe.show()
-
+    # Clean Dataframe
     data_dataframe = data_dataframe.select('geoname_id', 'continent_name', 'country_name', 'subdivision_1_name', 'city_name')
     data_dataframe.show()
 
-    # Save clean Dataframes
-    ipv4_dataframe.write.format(args.hdfs_target_format).mode('overwrite').save(f'{args.hdfs_target_dir}/ipv4/{args.year}/{args.month}/{args.day}')
-    data_dataframe.write.format(args.hdfs_target_format).mode('overwrite').save(f'{args.hdfs_target_dir}/data/{args.year}/{args.month}/{args.day}')
+    # Save clean Dataframe in MySql
+    data_dataframe.write.format('jdbc').option('createTableOptions', 'CHARACTER SET utf8').options(
+        url='jdbc:mysql://smoothcloud.de:3306/geolite',
+        driver='com.mysql.jdbc.Driver',
+        dbtable='data_table',
+        user='geo',
+        password='geolite_pw').mode('overwrite').save()
+

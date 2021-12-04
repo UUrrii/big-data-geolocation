@@ -10,6 +10,9 @@
   "author": "Alexis Terzidis",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "ip-range-check": "^0.2.0",
+    "mysql2": "^2.3.3"
   }
 }
+
