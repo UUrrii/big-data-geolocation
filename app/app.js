@@ -27,10 +27,9 @@ app.get('/ip/:ip', async function (req, res) {
     });
 
     const ip = req.params.ip;
-    const cutIp = ip.substring(0, ip.lastIndexOf('.') + 1);
     let geoname_id;
 
-    const [ipv4_results] = await mysqlConnection.execute(`SELECT network, geoname_id FROM ipv4_table WHERE network LIKE '${cutIp}%'`);
+    const [ipv4_results] = await mysqlConnection.execute(`SELECT network, geoname_id FROM ipv4_table`);
     for (const ipv4_result of ipv4_results) {
         if (ipRangeCheck(ip, ipv4_result.network)) {
             geoname_id = ipv4_result.geoname_id;
